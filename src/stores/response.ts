@@ -13,7 +13,7 @@ export const useResponseStore = defineStore("response", () => {
 
   async function getResponseByNim(nim: string) {
     try {
-      const response = await axios.get(`https://script.google.com/macros/s/AKfycbySkDtqyFAMe_DTyIbk0OZ7A2BoAyciiUmsPsB3-VDYN0q2wft-Ra0O2LSi2T5lGPSs/exec?action=nim&nim=${nim}`);
+      const response = await axios.get(`https://script.google.com/macros/s/AKfycbzFDac8fWotruptG-rXCG1jUW5VfBmOpBpvFE_wfvswa2cGRoKQEHlNhpsxeLuSZzN0Xg/exec?action=nim&nim=${nim}`);
 
       if (response.data.code === 404) {
         errorMessage.value = "Gak ketemu";
