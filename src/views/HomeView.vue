@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { useResponseStore } from '@/stores/response';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 const responseStore = useResponseStore();
-const nim = ref<string>("");
+const nim = ref<string>('');
 const isLoading = ref<boolean>(false);
 
+const loadingStates = reactive<{ [key: string]: boolean }>({});
+const nilai = reactive<{ [key: string]: string }>({});
+const catatan = reactive<{ [key: string]: string }>({});
+
+// Search
 function kirim() {
   if (!nim.value) {
     responseStore.errorMessage = 'Masukin NIM dulu';
@@ -16,11 +23,18 @@ function kirim() {
   responseStore.errorMessage = '';
 
   responseStore.getResponseByNim(nim.value)
+    .then(() => {
+      responseStore.responses.forEach(item => {
+        nilai[item.id] = item['Nilai'] || '';
+        catatan[item.id] = item['Catatan'] || '';
+      });
+    })
     .finally(() => {
       isLoading.value = false;
     });
 }
 
+// Reset input search
 function reset() {
   nim.value = '';
   responseStore.responses = [];
@@ -39,15 +53,73 @@ const formatDate = (timestamp: string) => {
     second: '2-digit',
   };
 
-  const formattedDate = date.toLocaleDateString('id-ID', options);
-
-  return `${formattedDate}`;
+  return date.toLocaleDateString('id-ID', options);
 };
 
+// Update nilai dan catatan
+async function update(id: string) {
+  loadingStates[id] = true;
+  responseStore.errorMessage = '';
+
+  const updateData = reactive({
+    id,
+    nilai: nilai[id],
+    catatan: catatan[id],
+  });
+
+  try {
+    await responseStore.updateById(updateData);
+
+    toast("Data berhasil disimpan!", {
+      "type": "success",
+      "pauseOnHover": false,
+      "autoClose": 1000,
+      "dangerouslyHTMLString": true
+    })
+
+  } catch (error) {
+    responseStore.errorMessage = 'Gagal menyimpan data';
+  } finally {
+    loadingStates[id] = false;
+  }
+}
+
+// Reset nilai dan catatan menjadi kosong
+async function updateReset(id: string) {
+  loadingStates[id] = true;
+  responseStore.errorMessage = '';
+
+  const updateData = reactive({
+    id,
+    nilai: '',
+    catatan: '',
+  });
+
+  try {
+    await responseStore.updateById(updateData);
+
+    nilai[id] = '';
+    catatan[id] = '';
+
+    toast("Data berhasil direset menjadi kosong!", {
+      "type": "success",
+      "pauseOnHover": false,
+      "autoClose": 1000,
+      "dangerouslyHTMLString": true
+    })
+
+  } catch (error) {
+    responseStore.errorMessage = 'Gagal menyimpan data';
+  } finally {
+    loadingStates[id] = false;
+  }
+}
 </script>
 
+
 <template>
-  <main class="mx-5 md:mx-10 my-14">
+  <main class="mx-6 md:mx-16 my-14">
+    <!-- Input and Search Buttons -->
     <label class="input input-bordered flex items-center gap-2">
       <input type="text" class="grow" placeholder="Masukin NIM" v-model="nim" @keydown.enter="kirim" />
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 opacity-70">
@@ -57,59 +129,95 @@ const formatDate = (timestamp: string) => {
       </svg>
     </label>
 
-    <!-- Reset -->
+    <!-- Reset and Search Buttons -->
     <div class="mt-5">
       <button @click="reset" class="btn btn-sm mr-5">Reset</button>
-      <button @click="kirim" class="btn btn-sm ">Cari</button>
+      <button @click="kirim" class="btn btn-sm">Cari</button>
     </div>
 
-    <!-- Filter Shift Baru -->
-    <!-- <div class="mt-5 flex">
-      <select class="select select-bordered w-full max-w-xs">
-        <option disabled selected>Shift Baru</option>
-        <option>A</option>
-        <option>B</option>
-      </select>
-    </div> -->
-
-    <!-- Error -->
+    <!-- Error Message -->
     <div v-if="responseStore.errorMessage" class="mt-5">
       <p class="text-red-500">{{ responseStore.errorMessage }}</p>
     </div>
 
-    <!-- Response -->
-    <div v-if="!isLoading && !responseStore.errorMessage && responseStore.responses.length > 0"
-      class="overflow-x-auto mt-10 md:mt-8">
+    <!-- Identitas -->
+    <div v-if="!isLoading && responseStore.responses.length > 0" class="mt-10 md:mt-8 mb-10 md:mb-8">
+      <ul class="flex gap-4">
+        <li class="w-[7%]">Nama</li>
+        <li class="w-1/12 text-center">:</li>
+        <li class="w-2/3">{{ responseStore.responses[0]['NAMA'] }}</li>
+      </ul>
+      <ul class="flex gap-4">
+        <li class="w-[7%]">NIM</li>
+        <li class="w-1/12 text-center">:</li>
+        <li class="w-2/3">{{ responseStore.responses[0]['NIM'] }}</li>
+      </ul>
+      <ul class="flex gap-4">
+        <li class="w-[7%]">SHIFT Baru</li>
+        <li class="w-1/12 text-center">:</li>
+        <li class="w-2/3">{{ responseStore.responses[0]['SHIFT Baru'] }}</li>
+      </ul>
+      <ul class="flex gap-4">
+        <li class="w-[7%]">SHIFT KRS</li>
+        <li class="w-1/12 text-center">:</li>
+        <li class="w-2/3">{{ responseStore.responses[0]['SHIFT KRS'] }}</li>
+      </ul>
+    </div>
+
+
+
+
+    <!-- Response Table -->
+    <div v-if="!isLoading && !responseStore.errorMessage && responseStore.responses.length > 0" class="overflow-x-auto">
       <table class="table w-full min-w-[400px]">
-        <!-- head -->
         <thead>
           <tr>
-            <th class="text-center" width="30%">Timestamp</th>
-            <th class="text-center" width="10%">Pertemuan Ke</th>
-            <th class="text-center" width="10%">Github</th>
+            <th class="text-center" width="5%">Pertemuan Ke</th>
+            <th class="text-center" width="20%">Timestamp</th>
+            <th class="text-center" width="25%">Github</th>
             <th class="text-center" width="10%">Nilai</th>
-            <th class="text-center">Catatan</th>
+            <th class="text-center" width="25%">Catatan</th>
+            <th class="text-center" width="15%">Action</th>
           </tr>
         </thead>
         <tbody>
-          <!-- row -->
           <tr v-for="(item, index) in responseStore.responses" :key="index">
-            <td class="text-center">{{ formatDate(item['Timestamp']) }}</td>
             <td class="text-center">{{ item['Pertemuan ke'] }}</td>
-            <td class="text-center">
+            <td class="text-center">{{ formatDate(item['Timestamp']) }}</td>
+            <td class="text-center md:break-all link link-primary">
               <a :href="item['Link Repository Github']" target="_blank">{{ item['Link Repository Github'] }}</a>
             </td>
-            <td class="text-center" v-if="item['Nilai'] == '' || item['Nilai'] == null">-</td>
-            <td class="text-center" v-else>{{ item['Nilai'] }}</td>
-            <td class="text-center" v-if="item['Catatan'] == '' || item['Catatan'] == null">-</td>
-            <td class="text-center" v-else>{{ item['Catatan'] }}</td>
+
+            <!-- Nilai Input -->
+            <td class="text-center">
+              <input type="text" :id="item['id']" placeholder="Nilai" class="input input-bordered w-full max-w-xs"
+                v-model="nilai[item.id]" />
+            </td>
+
+            <!-- Catatan Input -->
+            <td class="text-center">
+              <textarea class="textarea textarea-bordered" :id="item['id']" placeholder="Catatan" rows="3"
+                v-model="catatan[item.id]"></textarea>
+            </td>
+
+            <!-- Action Buttons -->
+            <td class="text-center">
+              <div v-if="!loadingStates[item['id']]" class="flex gap-3">
+                <button @click="updateReset(item['id'])" class="btn btn-warning text-white btn-sm">Reset</button>
+                <button @click="update(item['id'])" class="btn btn-success text-white btn-sm">Simpan</button>
+              </div>
+              <div v-else>
+                <span class="loading loading-spinner loading-md"></span>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <!-- Loading State -->
     <div v-else-if="isLoading" class="mt-5">
       <p>Mohon bersabar...</p>
     </div>
-
   </main>
 </template>
