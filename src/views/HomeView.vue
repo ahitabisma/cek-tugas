@@ -86,6 +86,7 @@ const formatDate = (timestamp: string) => {
           <tr>
             <th class="text-center" width="30%">Timestamp</th>
             <th class="text-center" width="10%">Pertemuan Ke</th>
+            <th class="text-center" width="10%">Github</th>
             <th class="text-center" width="10%">Nilai</th>
             <th class="text-center">Catatan</th>
           </tr>
@@ -95,6 +96,9 @@ const formatDate = (timestamp: string) => {
           <tr v-for="(item, index) in responseStore.responses" :key="index">
             <td class="text-center">{{ formatDate(item['Timestamp']) }}</td>
             <td class="text-center">{{ item['Pertemuan ke'] }}</td>
+            <td class="text-center">
+              <a :href="item['Link Repository Github']" target="_blank">{{ item['Link Repository Github'] }}</a>
+            </td>
             <td class="text-center" v-if="item['Nilai'] == '' || item['Nilai'] == null">-</td>
             <td class="text-center" v-else>{{ item['Nilai'] }}</td>
             <td class="text-center" v-if="item['Catatan'] == '' || item['Catatan'] == null">-</td>
