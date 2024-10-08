@@ -42,7 +42,7 @@ export const useResponseStore = defineStore("response", () => {
   // Update By ID
   async function updateById(payload: UpdateData) {
     try {
-      const response = await fetch(`${baseUrl}?action=update&id=${payload.id}`, {
+      const fetchData = await fetch(`${baseUrl}?action=update&id=${payload.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -51,7 +51,9 @@ export const useResponseStore = defineStore("response", () => {
         redirect: 'follow'
       });
 
-      return response;
+      const response = await fetchData.json();
+
+      return response.data;
     } catch (error: Error | any) {
       errorMessage.value = error.message || "Maaf ada error";
     }

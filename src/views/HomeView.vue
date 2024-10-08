@@ -78,7 +78,12 @@ async function update(id: string) {
     })
 
   } catch (error) {
-    responseStore.errorMessage = 'Gagal menyimpan data';
+    toast("Data gagal disimpan!", {
+      "type": "error",
+      "pauseOnHover": false,
+      "autoClose": 1000,
+      "dangerouslyHTMLString": true
+    })
   } finally {
     loadingStates[id] = false;
   }
@@ -97,7 +102,7 @@ async function updateReset(id: string) {
 
   try {
     await responseStore.updateById(updateData);
-
+    
     nilai[id] = '';
     catatan[id] = '';
 
@@ -109,7 +114,12 @@ async function updateReset(id: string) {
     })
 
   } catch (error) {
-    responseStore.errorMessage = 'Gagal menyimpan data';
+    toast("Data gagal disimpan!", {
+      "type": "error",
+      "pauseOnHover": false,
+      "autoClose": 1000,
+      "dangerouslyHTMLString": true
+    })
   } finally {
     loadingStates[id] = false;
   }
@@ -143,22 +153,22 @@ async function updateReset(id: string) {
     <!-- Identitas -->
     <div v-if="!isLoading && responseStore.responses.length > 0" class="mt-10 md:mt-8 mb-10 md:mb-8">
       <ul class="flex gap-4">
-        <li class="w-[7%]">Nama</li>
+        <li class="w-[25%] md:w-[15%] lg:w-[7%]">Nama</li>
         <li class="w-1/12 text-center">:</li>
         <li class="w-2/3">{{ responseStore.responses[0]['NAMA'] }}</li>
       </ul>
       <ul class="flex gap-4">
-        <li class="w-[7%]">NIM</li>
+        <li class="w-[25%] md:w-[15%] lg:w-[7%]">NIM</li>
         <li class="w-1/12 text-center">:</li>
         <li class="w-2/3">{{ responseStore.responses[0]['NIM'] }}</li>
       </ul>
       <ul class="flex gap-4">
-        <li class="w-[7%]">SHIFT Baru</li>
+        <li class="w-[25%] md:w-[15%] lg:w-[7%]">SHIFT Baru</li>
         <li class="w-1/12 text-center">:</li>
         <li class="w-2/3">{{ responseStore.responses[0]['SHIFT Baru'] }}</li>
       </ul>
       <ul class="flex gap-4">
-        <li class="w-[7%]">SHIFT KRS</li>
+        <li class="w-[25%] md:w-[15%] lg:w-[7%]">SHIFT KRS</li>
         <li class="w-1/12 text-center">:</li>
         <li class="w-2/3">{{ responseStore.responses[0]['SHIFT KRS'] }}</li>
       </ul>
@@ -184,13 +194,13 @@ async function updateReset(id: string) {
           <tr v-for="(item, index) in responseStore.responses" :key="index">
             <td class="text-center">{{ item['Pertemuan ke'] }}</td>
             <td class="text-center">{{ formatDate(item['Timestamp']) }}</td>
-            <td class="text-center md:break-all link link-primary">
+            <td class="text-center lg:break-all link link-primary">
               <a :href="item['Link Repository Github']" target="_blank">{{ item['Link Repository Github'] }}</a>
             </td>
 
             <!-- Nilai Input -->
             <td class="text-center">
-              <input type="text" :id="item['id']" placeholder="Nilai" class="input input-bordered w-full max-w-xs"
+              <input type="number" :id="item['id']" placeholder="Nilai" class="input input-bordered w-full max-w-xs"
                 v-model="nilai[item.id]" />
             </td>
 
