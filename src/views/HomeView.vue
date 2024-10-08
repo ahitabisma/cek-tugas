@@ -174,9 +174,6 @@ async function updateReset(id: string) {
       </ul>
     </div>
 
-
-
-
     <!-- Response Table -->
     <div v-if="!isLoading && !responseStore.errorMessage && responseStore.responses.length > 0" class="overflow-x-auto">
       <table class="table w-full min-w-[400px]">

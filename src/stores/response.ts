@@ -25,9 +25,9 @@ export const useResponseStore = defineStore("response", () => {
       const response = await axios.get(`${baseUrl}?action=nim&nim=${nim}`);
 
       if (response.data.code === 404) {
-        errorMessage.value = response.data.message;
+        errorMessage.value = response.data.data;
       } else if (response.data.code !== 200) {
-        errorMessage.value = response.data.message;
+        errorMessage.value = response.data.data;
       } else {
         errorMessage.value = "";
         responses.value = response.data.data || [];
