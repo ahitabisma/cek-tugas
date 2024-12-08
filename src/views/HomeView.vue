@@ -358,7 +358,7 @@ async function getResponsi2(nim: string, email: string) {
       <div v-if="activeTab === 'post_test'" class="overflow-x-auto">
         <div v-for="(item, index) in responseStore.responses" :key="index" class="space-y-5">
           <div v-for="(value, key) in item" :key="key">
-            <p class="font-bold" v-html="key"></p>
+            <p class="font-bold">{{ key }}</p>
             <p>
               {{ key.toString().includes('Timestamp') ? formatDate(value) : value }}
             </p>
