@@ -22,7 +22,7 @@ export const useResponseStore = defineStore("response", () => {
   // Get Response By NIM
   async function getResponseByNim(nim: string) {
     try {
-      const response = await axios.get(`${baseUrl}?action=nim&nim=${nim}`);
+      const response = await axios.get(`${baseUrl}?action=nimEmail&nimEmail=${nim}`);
 
       if (response.data.code === 404) {
         errorMessage.value = response.data.data;
