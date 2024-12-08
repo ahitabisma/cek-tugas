@@ -35,6 +35,8 @@ function kirim() {
   isLoading.value = true;
   responseStore.errorMessage = '';
 
+  responseStore.response = [];
+
   responseStore.getResponseByNim(nim.value)
     .then(() => {
       responseStore.responses.forEach(item => {
