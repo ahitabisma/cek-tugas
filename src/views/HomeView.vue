@@ -295,7 +295,7 @@ async function getResponsi2(nim: string, email: string) {
       </div>
 
       <!-- Response Table Tugas -->
-      <div v-if="!isLoadingTab && activeTab === 'tugas' && dataSementara.nim !== ''" class="overflow-x-auto">
+      <div v-if="!isLoading && !isLoadingTab && activeTab === 'tugas' && dataSementara.nim !== ''" class="overflow-x-auto">
         <table class="table w-full min-w-[400px]">
           <thead>
             <tr>
