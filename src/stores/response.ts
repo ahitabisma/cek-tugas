@@ -19,10 +19,90 @@ export const useResponseStore = defineStore("response", () => {
   const response = ref<Response>();
   const errorMessage = ref<any>("");
 
-  // Get Response By NIM
+  // Get Response Tugas By NIM
   async function getResponseByNim(nim: string) {
     try {
       const response = await axios.get(`${baseUrl}?action=nimEmail&nimEmail=${nim}`);
+
+      if (response.data.code === 404) {
+        errorMessage.value = response.data.data;
+      } else if (response.data.code !== 200) {
+        errorMessage.value = response.data.data;
+      } else {
+        errorMessage.value = "";
+        responses.value = response.data.data || [];
+      }
+
+      return response.data;
+    } catch (error: Error | any) {
+      errorMessage.value = error.message || "Maaf ada error";
+    }
+  }
+
+  // get Pretest
+  async function getPretest(nim: string, email: string) {
+    try {
+      const response = await axios.get(`${baseUrl}?action=pretest&nim=${nim}&email=${email}`);
+
+      if (response.data.code === 404) {
+        errorMessage.value = response.data.data;
+      } else if (response.data.code !== 200) {
+        errorMessage.value = response.data.data;
+      } else {
+        errorMessage.value = "";
+        responses.value = response.data.data || [];
+      }
+
+      return response.data;
+    } catch (error: Error | any) {
+      errorMessage.value = error.message || "Maaf ada error";
+    }
+  }
+
+  // get Posttest
+  async function getPosttest(nim: string, email: string) {
+    try {
+      const response = await axios.get(`${baseUrl}?action=posttest&nim=${nim}&email=${email}`);
+
+      if (response.data.code === 404) {
+        errorMessage.value = response.data.data;
+      } else if (response.data.code !== 200) {
+        errorMessage.value = response.data.data;
+      } else {
+        errorMessage.value = "";
+        responses.value = response.data.data || [];
+      }
+
+      return response.data;
+    } catch (error: Error | any) {
+      errorMessage.value = error.message || "Maaf ada error";
+    }
+  }
+
+  // get Responsi1
+  async function getResponsi1(nim: string, email: string) {
+    try {
+      const response = await axios.get(`${baseUrl}?action=responsi1&nim=${nim}&email=${email}`);
+
+      if (response.data.code === 404) {
+        errorMessage.value = response.data.data;
+      } else if (response.data.code !== 200) {
+        errorMessage.value = response.data.data;
+      } else {
+        errorMessage.value = "";
+        responses.value = response.data.data || [];
+      }
+
+      return response.data;
+    } catch (error: Error | any) {
+      errorMessage.value = error.message || "Maaf ada error";
+    }
+  }
+
+  // get Responsi2
+  async function getResponsi2(nim: string, email: string) {
+    try {
+      const response = await axios.get(`${baseUrl}?action=responsi2&nim=${nim}&email=${email}`);
 
       if (response.data.code === 404) {
         errorMessage.value = response.data.data;
@@ -59,5 +139,5 @@ export const useResponseStore = defineStore("response", () => {
     }
   }
 
-  return { responses, response, getResponseByNim, errorMessage, updateById };
+  return { responses, response, getResponseByNim, errorMessage, updateById, getPretest, getPosttest, getResponsi1, getResponsi2 };
 });
