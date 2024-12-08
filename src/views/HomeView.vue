@@ -272,12 +272,12 @@ async function getResponsi2(nim: string, email: string) {
     </div>
 
     <!-- Loading State -->
-    <div v-else-if="isLoading" class="mt-5">
+    <div v-if="isLoading" class="mt-5">
       <p>Mohon bersabar...</p>
     </div>
 
     <div>
-      <div v-if="dataSementara.nim != ''" role="tablist" class="tabs tabs-lifted my-5">
+      <div v-if="!isLoading && dataSementara.nim != ''" role="tablist" class="tabs tabs-lifted my-5">
         <a role="tab" id="tugas" :class="['tab', activeTab === 'tugas' ? 'tab-active [--tab-bg:black] text-white' : '']"
           @click="getTugas(dataSementara.nim)">Tugas</a>
         <a role="tab" id="pre_test"
